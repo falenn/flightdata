@@ -9,8 +9,9 @@
 		<maven.compiler.source>1.11</maven.compiler.source>
 		<version.java-release>11</version.java-release>
 		<version.springframework>5.3.25</version.springframework>
+		<version.spring-kafka>2.8.6</version.spring-kafka>
 		<version.springframework.boot>2.7.9</version.springframework.boot>
-		<version.springframework.integration>4.3.5.RELEASE</version.springframework.integration>
+		<version.springframework.integration>5.5.3</version.springframework.integration>
 		<version.lombok>1.18.20</version.lombok>
 		<version.maven-surefire>2.22.2</version.maven-surefire>
 		<version.maven-failsafe-plugin>2.22.2</version.maven-failsafe-plugin>
@@ -41,6 +42,12 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-test</artifactId>
+				<version>${version.springframework.boot}</version>
+				<scope>test</scope>
+			</dependency>
 			<!-- Spring Integration -->
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
@@ -51,6 +58,29 @@
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-file</artifactId>
 				<version>${version.springframework.integration}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-kafka</artifactId>
+				<version>${version.springframework.integration}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-test</artifactId>
+				<version>${version.springframework.integration}</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- spring kafka -->
+			<dependency>
+				<groupId>org.springframework.kafka</groupId>
+				<artifactId>spring-kafka</artifactId>
+				<version>${version.spring-kafka}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.kafka</groupId>
+				<artifactId>spring-kafka-test</artifactId>
+				<version>${version.spring-kafka}</version>
+				<scope>test</scope>
 			</dependency>
 			<!-- Modelling -->
 			<dependency>

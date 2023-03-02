@@ -24,6 +24,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.imwiz.flightdata.etl.channel.CountDownLatchHandler;
 
+/**
+ * producingChannel -> producingChannelAdapter -> kafka topic -> consumingChannelAdapter -> CountDownLatchHandler
+ * @author curtisbates
+ *
+ */
 @EmbeddedKafka(ports = 9093, count = 1, topics = "spring-integration-kafka.t", bootstrapServersProperty = "kafka.bootstrap-servers")
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -49,7 +54,7 @@ public class ApplicationTest {
 			// @TODO understand why this isn't autowired
 			MessageChannel producingChannel = applicationContext.getBean("producingChannel", MessageChannel.class);
 
-			logger.info("Seinding 10 messages");
+			logger.info("Sending 10 messages");
 			for (int i = 0; i < 10; i++) {
 				GenericMessage<String> message = new GenericMessage<>("Message: " + i, headers);
 

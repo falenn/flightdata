@@ -20,6 +20,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.messaging.MessageChannel;
 
 import com.imwiz.flightdata.etl.channel.CountDownLatchHandler;
+import com.imwiz.flightdata.etl.si.interceptor.LoggingAndCountingChannelInterceptor;
 
 @Configuration
 public class ConsumingChannelConfig {
@@ -34,7 +35,9 @@ public class ConsumingChannelConfig {
 	
 	@Bean
 	public MessageChannel consumingChannel() {
-		return new DirectChannel();
+		DirectChannel channel = new DirectChannel();
+		channel.addInterceptor( new LoggingAndCountingChannelInterceptor());
+		return channel;
 	}
 	
 	@Bean

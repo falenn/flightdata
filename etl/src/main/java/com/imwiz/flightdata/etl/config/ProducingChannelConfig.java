@@ -20,6 +20,8 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
+import com.imwiz.flightdata.etl.si.interceptor.LoggingAndCountingChannelInterceptor;
+
 @Configuration
 public class ProducingChannelConfig {
 
@@ -32,14 +34,18 @@ public class ProducingChannelConfig {
 	
 	@Bean
 	public MessageChannel producingChannel() {
-		return new DirectChannel();
+		DirectChannel channel = new DirectChannel();
+		channel.addInterceptor(new LoggingAndCountingChannelInterceptor());
+		return channel;
 	}
 	
 	@Bean
 	@ServiceActivator(inputChannel = "producingChannel")
 	public MessageHandler kafkaMessageHandler() {
+		logger.debug("Begin aMessageHandler");
 		KafkaProducerMessageHandler<String, String> handler = 
 				new KafkaProducerMessageHandler<>(kafkaTemplate());
+		//this will match up with the GroupId as interpreted by the consumer
 		handler.setMessageKeyExpression(new LiteralExpression("kafka-integration"));
 		return handler;
 	}

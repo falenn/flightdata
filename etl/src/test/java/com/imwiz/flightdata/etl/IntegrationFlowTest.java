@@ -14,7 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.kafka.dsl.Kafka;
+import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.MessageChannel;
@@ -24,17 +28,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.imwiz.flightdata.etl.channel.CountDownLatchHandler;
 import com.imwiz.flightdata.model.config.KafkaProperties;
 
-/**
- * producingChannel -> producingChannelAdapter -> kafka topic ->
- * consumingChannelAdapter -> CountDownLatchHandler
- *
- */
 @EmbeddedKafka(ports = 9092, count = 1, topics = "spring-integration-kafka.t", bootstrapServersProperty = "kafka.bootstrap-servers")
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ApplicationTest {
+public class IntegrationFlowTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(ApplicationTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(IntegrationFlowTest.class);
 
 	// private EmbeddedKafkaBroker kafkaBroker;
 
@@ -45,15 +44,38 @@ public class ApplicationTest {
 	private KafkaProperties props;
 
 	@Autowired
+	private KafkaTemplate<String, String> producingKafkaTemplate;
+
+	@Autowired
+	private ConsumerFactory<?, ?> consumerFactory;
+
+	@Autowired
 	private MessageChannel producingChannel;
 
 	@Autowired
-	private CountDownLatchHandler countDownLatchHandler;
-	 
+	private MessageChannel consumingChannel;
+
+	@Autowired
+	private CountDownLatchHandler latchHandler;
 
 	@Test
-	public void test() {
+	public void testIntegrationFlow() {
+
 		try {
+			// start producerflow
+			// IntegrationFlow producerFlow = (IntegrationFlow)
+			// applicationContext.getBean("kafkaProducerFlow");
+			// MessageChannel outChannel = producerFlow.getInputChannel();
+			IntegrationFlows.from(producingChannel)
+					.handle(Kafka.outboundChannelAdapter(producingKafkaTemplate).topic(props.getTestTopic())).get();
+
+			// start consumerflow
+			// IntegrationFlow consumerFlow = (IntegrationFlow)
+			// applicationContext.getBean("kafkaConsumerFlow");
+			IntegrationFlows
+					.from(Kafka.messageDrivenChannelAdapter(consumerFactory,
+							KafkaMessageDrivenChannelAdapter.ListenerMode.record, props.getTestTopic()))
+					.handle(latchHandler).get();
 
 			// Create message headers
 			Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, props.getTestTopic());
@@ -66,12 +88,12 @@ public class ApplicationTest {
 
 			}
 
-			countDownLatchHandler.getLatch().await(10000, TimeUnit.MILLISECONDS);
-			assertThat(countDownLatchHandler.getLatch().getCount()).isEqualTo(0);
+			latchHandler.getLatch().await(10000, TimeUnit.MILLISECONDS);
+			assertThat(latchHandler.getLatch().getCount()).isEqualTo(0);
 
 		} catch (Exception e) {
-			fail("Error: " + e.getMessage());
+			fail(e.getMessage());
 		}
-		
+
 	}
 }

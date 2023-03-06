@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.kafka.dsl.Kafka;
 import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
@@ -74,13 +75,17 @@ public class IntegrationFlowTest {
 			// applicationContext.getBean("kafkaConsumerFlow");
 			IntegrationFlows
 					.from(Kafka.messageDrivenChannelAdapter(consumerFactory,
-							KafkaMessageDrivenChannelAdapter.ListenerMode.record, props.getTestTopic()))
+							KafkaMessageDrivenChannelAdapter.ListenerMode.record, props.getTestTopic()))		
 					.handle(latchHandler).get();
 
-			// Create message headers
-			Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, props.getTestTopic());
-
+			logger.info("Flows running...");
+			//Pause to show that flows are running
+			Thread.sleep(10000);
+			
+			
 			logger.info("Sending 10 messages");
+			// Create message headers
+			Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, props.getTestTopic());		
 			for (int i = 0; i < 10; i++) {
 				GenericMessage<String> message = new GenericMessage<>("Message: " + i, headers);
 				producingChannel.send(message);

@@ -4,10 +4,13 @@ import java.util.Scanner;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import com.imwiz.flightdata.etl.config.AppConfig;
 
+
+@PropertySource("application.properties")
 @SpringBootApplication
 public class App {
 

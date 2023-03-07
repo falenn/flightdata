@@ -9,7 +9,7 @@ import org.springframework.integration.config.EnableIntegration;
 import com.imwiz.flightdata.model.config.KafkaProperties;
 
 @Configuration 
-@PropertySource("classpath:values.properties")
+@PropertySource("application.properties")
 @EnableIntegration
 public class PropertyConfig {
 

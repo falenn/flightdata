@@ -80,7 +80,7 @@ public class KafkaConsumingChannelAdapter {
 	 * 
 	 * @return
 	 */
-	@Bean
+	@Bean(name = "myConsumerFactory")
 	public ConsumerFactory<?, ?> consumerFactory() {
 		return new DefaultKafkaConsumerFactory<>(consumerConfigs());
 	}

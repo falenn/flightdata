@@ -2,16 +2,13 @@ package com.imwiz.flightdata.etl.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.expression.common.LiteralExpression;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.PublishSubscribeChannel;
-import org.springframework.integration.kafka.outbound.KafkaProducerMessageHandler;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
 
-import com.imwiz.flightdata.etl.channel.CountDownLatchHandler;
 import com.imwiz.flightdata.etl.si.interceptor.LoggingAndCountingChannelInterceptor;
+import com.imwiz.flightdata.etl.si.serviceactivator.CountDownLatchHandler;
 
 @Configuration
 public class ChannelConfig {

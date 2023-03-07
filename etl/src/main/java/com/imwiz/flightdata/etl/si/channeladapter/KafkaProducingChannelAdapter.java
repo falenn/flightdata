@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,14 +14,18 @@ import org.springframework.integration.kafka.outbound.KafkaProducerMessageHandle
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.DefaultKafkaHeaderMapper;
 import org.springframework.messaging.MessageHandler;
 
 import com.imwiz.flightdata.model.config.KafkaProperties;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 public class KafkaProducingChannelAdapter {
 
-	private static Logger logger = LoggerFactory.getLogger(KafkaProducingChannelAdapter.class);
+	
 
 	@Autowired
 	private KafkaProperties props;
@@ -31,14 +33,20 @@ public class KafkaProducingChannelAdapter {
 	@Bean
 	@ServiceActivator(inputChannel = "producingChannel")
 	public MessageHandler kafkaMessageHandler() {
-		logger.debug("Begin aMessageHandler");
-		KafkaProducerMessageHandler<String, String> handler = new KafkaProducerMessageHandler<>(
-				producingKafkaTemplate());
+		log.debug("Begin aMessageHandler");
+		KafkaProducerMessageHandler<String, String> handler = new KafkaProducerMessageHandler<>(producingKafkaTemplate());
 		// this will match up with the GroupId as interpreted by the consumer
 		handler.setMessageKeyExpression(new LiteralExpression(props.getMessageKey()));
+		handler.setTopicExpression(new LiteralExpression(props.getTestTopic()));
 		return handler;
 	}
-
+	
+	@Bean
+	public DefaultKafkaHeaderMapper mapper() {
+		return new DefaultKafkaHeaderMapper();
+	}
+	
+	
 	@Bean
 	public KafkaTemplate<String, String> producingKafkaTemplate() {
 		return new KafkaTemplate<>(producerFactory());

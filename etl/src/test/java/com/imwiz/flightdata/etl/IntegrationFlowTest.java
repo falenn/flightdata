@@ -9,35 +9,47 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.integration.IntegrationMessageHeaderAccessor;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.kafka.dsl.Kafka;
+import org.springframework.integration.kafka.dsl.KafkaProducerMessageHandlerSpec;
 import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.DefaultKafkaHeaderMapper;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.imwiz.flightdata.etl.channel.CountDownLatchHandler;
+import com.imwiz.flightdata.etl.si.serviceactivator.CountDownLatchHandler;
 import com.imwiz.flightdata.model.config.KafkaProperties;
 
-@EmbeddedKafka(ports = 9092, count = 1, topics = "spring-integration-kafka.t", bootstrapServersProperty = "kafka.bootstrap-servers")
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Configuration
+@PropertySource("test-application.properties")
+@EmbeddedKafka(ports = 9092, count = 1, topics = "test.integration-flow.t", bootstrapServersProperty = "kafka.bootstrap-servers")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class IntegrationFlowTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(IntegrationFlowTest.class);
+	@Value("${kafka.topic.test.integration-flow}")
+	private static String testTopic;
 
 	// private EmbeddedKafkaBroker kafkaBroker;
-
 	@Autowired
 	private ApplicationContext applicationContext;
 
@@ -46,59 +58,105 @@ public class IntegrationFlowTest {
 
 	@Autowired
 	private KafkaTemplate<String, String> producingKafkaTemplate;
+	
+	@Autowired
+	private DefaultKafkaHeaderMapper mapper;
 
 	@Autowired
+	@Qualifier("myConsumerFactory")
 	private ConsumerFactory<?, ?> consumerFactory;
+	
+	@Autowired
+	public ProducerFactory<String, String> producerFactory;
+
+	// @Autowired
+	// private ConcurrentMessageListenerContainer<String, String>
+	// kafkaListenerContainer;
 
 	@Autowired
 	private MessageChannel producingChannel;
 
 	@Autowired
-	private MessageChannel consumingChannel;
+	private CountDownLatchHandler countDownLatchHandler;
 
-	@Autowired
-	private CountDownLatchHandler latchHandler;
+	
+	/**
+	 * KafkaProducerMessageHandlerSpec
+	 * 
+	 * @param producerFactory
+	 * @param topic
+	 * @return
+	 */
+	private KafkaProducerMessageHandlerSpec<String,String, ?> newKafkaMessageHandler(
+			ProducerFactory<String, String> producerFactory,
+			String topic) {
+		return Kafka
+				.outboundChannelAdapter(producerFactory)
+				.messageKey(m -> m
+						.getHeaders()
+						.get(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER))
+				.headerMapper(mapper)
+				.topicExpression("headers[kafka_topic]?: '" + topic + "'")
+				.configureKafkaTemplate(t -> t.id("kafkaTemplate:" + topic));
+	}
+	/** 
+	 * Headers
+	 * kafka_messageKey: populate the key of the Kafka Message
+	 * kafka_topic: specify topic to publish to
+	 * kafka_partitionId: specify partition to write to
+	 * 
+	 * SpEL is also usable to help apply dynamic values at runtime when probing the request message
+	 * 
+	 * OutboundChannelAdapter requires a KafkaTemplate which requires a KafkaProducerFactory.
+	 * 
+	 */
+	@Bean("testTopicProducerFlow")
+	public IntegrationFlow testTopicProducerFlow() {
+		log.debug("Begin testTopicProducerFlow");
+		return flow -> flow.from(producingChannel).handle(
+				newKafkaMessageHandler(producerFactory, testTopic),
+				e -> e.id("kafkaProducer1")).get();
+				
+				//Kafka.outboundChannelAdapter(producingKafkaTemplate).messageKey(props.getMessageKey()))
+				//.get();
+	}
+
+	@Bean("testTopicConsumerFlow")
+	public IntegrationFlow testTopicConsumerFlow() {
+		log.debug("Begin testTopicConsumerFlow");
+		return IntegrationFlows
+				.from(Kafka.messageDrivenChannelAdapter(consumerFactory,
+						KafkaMessageDrivenChannelAdapter.ListenerMode.record, testTopic))
+				.handle(countDownLatchHandler).get();
+	}
 
 	@Test
 	public void testIntegrationFlow() {
 
 		try {
-			// start producerflow
-			// IntegrationFlow producerFlow = (IntegrationFlow)
-			// applicationContext.getBean("kafkaProducerFlow");
-			// MessageChannel outChannel = producerFlow.getInputChannel();
-			IntegrationFlows.from(producingChannel)
-					.handle(Kafka.outboundChannelAdapter(producingKafkaTemplate).topic(props.getTestTopic())).get();
-
-			// start consumerflow
-			// IntegrationFlow consumerFlow = (IntegrationFlow)
-			// applicationContext.getBean("kafkaConsumerFlow");
-			IntegrationFlows
-					.from(Kafka.messageDrivenChannelAdapter(consumerFactory,
-							KafkaMessageDrivenChannelAdapter.ListenerMode.record, props.getTestTopic()))		
-					.handle(latchHandler).get();
-
-			logger.info("Flows running...");
-			//Pause to show that flows are running
-			Thread.sleep(10000);
+			//testTopicProducerFlow();
+			log.info("Producer flow running...");
 			
-			
-			logger.info("Sending 10 messages");
+			log.info("Sending 10 messages");
 			// Create message headers
-			Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, props.getTestTopic());		
+			Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, testTopic);
 			for (int i = 0; i < 10; i++) {
 				GenericMessage<String> message = new GenericMessage<>("Message: " + i, headers);
 				producingChannel.send(message);
-				logger.info("sent message: " + i);
+				log.info("sent message: " + i);
 
 			}
+			// Pause to show that flows are running
+			Thread.sleep(5000);
+			log.info("Producer flow now running");
+			//testTopicConsumerFlow();
 
-			latchHandler.getLatch().await(10000, TimeUnit.MILLISECONDS);
-			assertThat(latchHandler.getLatch().getCount()).isEqualTo(0);
+			countDownLatchHandler.getLatch().await(10000, TimeUnit.MILLISECONDS);
+			assertThat(countDownLatchHandler.getLatch().getCount()).isEqualTo(0);
 
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-
 	}
+
 }

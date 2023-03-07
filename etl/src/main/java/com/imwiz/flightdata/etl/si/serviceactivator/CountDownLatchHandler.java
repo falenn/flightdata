@@ -1,4 +1,4 @@
-package com.imwiz.flightdata.etl.channel;
+package com.imwiz.flightdata.etl.si.serviceactivator;
 
 import java.util.concurrent.CountDownLatch;
 

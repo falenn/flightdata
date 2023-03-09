@@ -26,5 +26,10 @@ public class ChannelConfig {
 	QueueChannel remainderIsTwoChannel() {
 		return new QueueChannel();
 	}
+	
+	@Bean
+	QueueChannel numbersClassifierChannel() {
+		return new QueueChannel();
+	}
 
 }

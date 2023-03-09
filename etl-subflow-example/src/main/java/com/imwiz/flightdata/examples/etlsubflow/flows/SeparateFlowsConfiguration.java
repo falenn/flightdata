@@ -7,8 +7,8 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.messaging.MessageChannel;
 
 import com.imwiz.flightdata.examples.etlsubflow.filters.IsRemainderTwoFilter;
-import com.imwiz.flightdata.examples.etlsubflow.filters.MultipleOfThreeFilter;
-import com.imwiz.flightdata.examples.etlsubflow.filters.RemainderIsOneFilter;
+import com.imwiz.flightdata.examples.etlsubflow.filters.IsMultipleOfThreeFilter;
+import com.imwiz.flightdata.examples.etlsubflow.filters.IsRemainderIsOneFilter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 public class SeparateFlowsConfiguration {
 
 	@Autowired
-	private MultipleOfThreeFilter multipleOfThreeFilter;
+	private IsMultipleOfThreeFilter multipleOfThreeFilter;
 
 	@Autowired
-	private RemainderIsOneFilter remainderIsOneFilter;
+	private IsRemainderIsOneFilter remainderIsOneFilter;
 
 	@Autowired
 	private IsRemainderTwoFilter isRemainderTwoFilter;

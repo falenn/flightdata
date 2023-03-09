@@ -6,8 +6,8 @@ import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 
 
-@MessagingGateway
-public interface NumbersClassifier {
+@MessagingGateway(name = "numbersGateway")
+public interface SeparateFlowsNumbersClassifierGateway {
 
 	/**
 	 * ".input" added to indicate lambda-based flow resolution

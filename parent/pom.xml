@@ -5,6 +5,7 @@
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<properties>
+		<version.com.imwiz.project.version>0.0.1-SNAPSHOT</version.com.imwiz.project.version>
 		<maven.compiler.target>1.11</maven.compiler.target>
 		<maven.compiler.source>1.11</maven.compiler.source>
 		<version.java-release>11</version.java-release>
@@ -22,6 +23,31 @@
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<!-- project -->
+			<dependency>
+				<groupId>com.imwiz.flightdata</groupId>
+				<artifactId>common-si</artifactId>
+				<version>${version.com.imwiz.project.version}</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.imwiz.flightdata</groupId>
+				<artifactId>model</artifactId>
+				<version>${version.com.imwiz.project.version}</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.imwiz.flightdata</groupId>
+				<artifactId>etl-subflow-example</artifactId>
+				<version>${version.com.imwiz.project.version}</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.imwiz.flightdata</groupId>
+				<artifactId>etl-router-example</artifactId>
+				<version>${version.com.imwiz.project.version}</version>
+				<type>jar</type>
+			</dependency>
 			<!-- Spring Dependencies -->
 			<dependency>
 				<!-- Import dependency management from Spring Boot -->
@@ -110,6 +136,11 @@
 				<version>${version.lombok}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${version.org.junit.jupiter}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
@@ -127,13 +158,13 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
+			<scope>runtime</scope>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-runner</artifactId>
 			<scope>test</scope>
-		</dependency>
+		</dependency -->
 		<!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
 		<dependency>
 			<groupId>org.awaitility</groupId>
@@ -212,12 +243,17 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.0</version>
+				<version>${version.maven-surefire}</version>
 				<dependencies>
-					<dependency>
+					<!-- dependency>
 						<groupId>org.junit.platform</groupId>
 						<artifactId>junit-platform-surefire-provider</artifactId>
 						<version>1.2.0</version>
+					</dependency -->
+					<dependency>
+						<groupId>org.junit.jupiter</groupId>
+						<artifactId>junit-jupiter-engine</artifactId>
+						<version>${version.maven-surefire}</version>
 					</dependency>
 				</dependencies>
 				<configuration>

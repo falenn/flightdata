@@ -6,20 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.messaging.Message;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.imwiz.flightdata.examples.etlsubflow.config.AppConfig;
 import com.imwiz.flightdata.examples.etlsubflow.config.ChannelConfig;
-import com.imwiz.flightdata.examples.etlsubflow.filters.IsRemainderTwoFilter;
 import com.imwiz.flightdata.examples.etlsubflow.filters.IsMultipleOfThreeFilter;
 import com.imwiz.flightdata.examples.etlsubflow.filters.IsRemainderIsOneFilter;
+import com.imwiz.flightdata.examples.etlsubflow.filters.IsRemainderTwoFilter;
 import com.imwiz.flightdata.examples.etlsubflow.flows.SeparateFlowsConfiguration;
 import com.imwiz.flightdata.examples.etlsubflow.gateways.SeparateFlowsNumbersClassifierGateway;
 
@@ -47,7 +45,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = { 
 		AppConfig.class,

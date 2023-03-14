@@ -3,10 +3,18 @@
   <groupId>com.imwiz.flightdata</groupId>
   <artifactId>builder</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <parent>
 	  <groupId>com.imwiz.flightdata.parent</groupId>
 	  <artifactId>parent</artifactId>
 	  <version>1.0.0</version>
   </parent>
+  
+  <modules>
+	  <module>../model</module>
+	  <module>../common-si</module>
+	  <module>../etl-subflow-example</module>
+	  <module>../etl-router-example</module>
+  </modules>
    
 </project>

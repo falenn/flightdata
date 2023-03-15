@@ -7,7 +7,7 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.messaging.MessageChannel;
 
-import com.imwiz.flightdata.etl.si.interceptor.LoggingAndCountingChannelInterceptor;
+import com.imwiz.flightdata.etl.si.channelInterceptor.LoggingAndCountingChannelInterceptor;
 import com.imwiz.flightdata.etl.si.serviceactivator.CountDownLatchHandler;
 
 @Configuration
@@ -22,7 +22,7 @@ public class ChannelConfig {
 	}
 	
 	@Bean
-	public MessageChannel producingChannel() {
+	public DirectChannel producingChannel() {
 		DirectChannel channel = new DirectChannel();
 		channel.addInterceptor(new LoggingAndCountingChannelInterceptor());
 		return channel;

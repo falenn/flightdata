@@ -39,6 +39,9 @@ public class EmbeddedKafkaTest {
 
         Thread.sleep(1000L);
         
+       
+        
+        
         //KafkaProducerMessageHandler<String, String> handler =
        // 		new KafkaProducerMessageHandler<String, String>(kafkaTemplate);
        // handler.

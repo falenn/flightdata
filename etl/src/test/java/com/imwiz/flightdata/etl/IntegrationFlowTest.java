@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @PropertySource("test-application.properties")
 @EmbeddedKafka(ports = 9092, count = 1, topics = "test.integration-flow.t", bootstrapServersProperty = "kafka.bootstrap-servers")
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class IntegrationFlowTest {
 
@@ -74,7 +72,7 @@ public class IntegrationFlowTest {
 	// kafkaListenerContainer;
 
 	@Autowired
-	private MessageChannel producingChannel;
+	private DirectChannel producingChannel;
 
 	@Autowired
 	private CountDownLatchHandler countDownLatchHandler;

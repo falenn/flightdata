@@ -11,8 +11,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.imwiz.flightdata</groupId>
+			<artifactId>common-si</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.imwiz.flightdata</groupId>
 			<artifactId>model</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<!-- Import dependency management from Spring Boot -->

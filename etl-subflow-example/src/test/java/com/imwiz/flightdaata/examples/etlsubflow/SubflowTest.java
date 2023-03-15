@@ -1,6 +1,6 @@
 package com.imwiz.flightdaata.examples.etlsubflow;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -86,10 +86,6 @@ public class SubflowTest {
 			log.info("remainderIsTwo: " + outMessage.getPayload());
 		}
 		assertEquals(7, addList(ans));
-
-		
-		
-		
 	}
 	
 	/*

@@ -13,6 +13,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 
 import com.imwiz.flightdata.etl.helper.MessageGenerator;
+import com.imwiz.flightdata.etl.si.channelInterceptor.LoggingAndCountingChannelInterceptor;
 
 public class LoggingAndCountingChannelInterceptorTest {
 

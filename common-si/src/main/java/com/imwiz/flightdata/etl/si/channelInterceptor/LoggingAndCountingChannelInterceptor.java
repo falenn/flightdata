@@ -1,4 +1,4 @@
-package com.imwiz.flightdata.etl.si.interceptor;
+package com.imwiz.flightdata.etl.si.channelInterceptor;
 
 import java.text.MessageFormat;
 import java.util.Arrays;

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class ChannelConfig {
 
+	// Used for subflow example
 	@Bean
 	QueueChannel multipleOfThreeChannel() {
 		return new QueueChannel();

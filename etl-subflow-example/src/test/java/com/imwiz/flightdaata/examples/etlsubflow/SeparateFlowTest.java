@@ -1,6 +1,6 @@
 package com.imwiz.flightdaata.examples.etlsubflow;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;

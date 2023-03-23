@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.PublishSubscribeChannel;
+import org.springframework.integration.channel.QueueChannel;
 import org.springframework.messaging.MessageChannel;
 
 import com.imwiz.flightdata.etl.si.channelInterceptor.LoggingAndCountingChannelInterceptor;
@@ -22,9 +23,10 @@ public class ChannelConfig {
 	}
 	
 	@Bean
-	public DirectChannel producingChannel() {
-		DirectChannel channel = new DirectChannel();
+	public MessageChannel producingChannel() {
+		QueueChannel channel = new QueueChannel();
 		channel.addInterceptor(new LoggingAndCountingChannelInterceptor());
+		channel.addInterceptor(new MicrometerCounterChannelInterceptor(meterRegistry));
 		return channel;
 	}
 	

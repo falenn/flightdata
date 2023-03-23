@@ -30,7 +30,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.GenericMessage;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.imwiz.flightdata.etl.si.serviceactivator.CountDownLatchHandler;
 import com.imwiz.flightdata.model.config.KafkaProperties;
@@ -72,7 +71,7 @@ public class IntegrationFlowTest {
 	// kafkaListenerContainer;
 
 	@Autowired
-	private DirectChannel producingChannel;
+	private MessageChannel producingChannel;
 
 	@Autowired
 	private CountDownLatchHandler countDownLatchHandler;
@@ -106,6 +105,9 @@ public class IntegrationFlowTest {
 	 * SpEL is also usable to help apply dynamic values at runtime when probing the request message
 	 * 
 	 * OutboundChannelAdapter requires a KafkaTemplate which requires a KafkaProducerFactory.
+	 * 
+	 * When using flow -> flow.from(, we need a messageSource, not a channel.
+	 * https://stackoverflow.com/questions/46311035/how-to-configure-a-trigger-in-spring-integration-flow-to-get-value-from-a-method
 	 * 
 	 */
 	@Bean("testTopicProducerFlow")

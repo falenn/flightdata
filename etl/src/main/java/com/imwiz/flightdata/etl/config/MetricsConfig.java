@@ -33,7 +33,7 @@ public class MetricsConfig {
 	 */
 	
 	@Bean
-	CompositeMeterRegistry compositeRegistry() {
+	CompositeMeterRegistry compositeMeterRegistry() {
 		CompositeMeterRegistry registry = new CompositeMeterRegistry();
 		registry.add(prometheusMeterRegistry());
 		return registry;
@@ -46,9 +46,6 @@ public class MetricsConfig {
 		return registry;
 	}
 	
-	
-	
-		
 	
 	/**
 	 * Implement PrometheusConfig

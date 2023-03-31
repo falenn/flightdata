@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imwiz.flightdata.model.flight.FlightOperations;
 import com.imwiz.flightdata.model.flight.Itinerary;
 import com.imwiz.flightdata.model.flight.Platform;
@@ -18,6 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 class TestLombok {
+	
+	private ObjectMapper mapper;
+	
+	@BeforeEach
+	private void setup() {
+		mapper = new ObjectMapper();
+	}
 
 	
 	@Test
@@ -54,12 +64,14 @@ class TestLombok {
 				.itinerary(itinerary)
 				.build();
 		
-		log.debug("FlightOps 1: " + flightOps);
-		
-		
-		
+		try {
+			log.debug("FlightOps 1: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(flightOps));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
-	
-	private TrackStatus createStatus()
+
 
 }

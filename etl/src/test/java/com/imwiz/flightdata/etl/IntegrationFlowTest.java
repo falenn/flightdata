@@ -108,18 +108,18 @@ public class IntegrationFlowTest {
 	 * 
 	 * When using flow -> flow.from(, we need a messageSource, not a channel.
 	 * https://stackoverflow.com/questions/46311035/how-to-configure-a-trigger-in-spring-integration-flow-to-get-value-from-a-method
-	 * 
+	 * #TODO FIX
 	 */
-	@Bean("testTopicProducerFlow")
-	public IntegrationFlow testTopicProducerFlow() {
-		log.debug("Begin testTopicProducerFlow");
-		return flow -> flow.from(producingChannel).handle(
-				newKafkaMessageHandler(producerFactory, testTopic),
-				e -> e.id("kafkaProducer1")).get();
+//	@Bean("testTopicProducerFlow")
+//	public IntegrationFlow testTopicProducerFlow() {
+//		log.debug("Begin testTopicProducerFlow");
+//		return flow -> flow.from(producingChannel).handle(
+//				newKafkaMessageHandler(producerFactory, testTopic),
+//				e -> e.id("kafkaProducer1")).get();
 				
 				//Kafka.outboundChannelAdapter(producingKafkaTemplate).messageKey(props.getMessageKey()))
 				//.get();
-	}
+//	}
 
 	@Bean("testTopicConsumerFlow")
 	public IntegrationFlow testTopicConsumerFlow() {

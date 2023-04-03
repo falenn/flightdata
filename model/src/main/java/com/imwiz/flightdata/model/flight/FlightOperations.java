@@ -23,7 +23,8 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized()
 public class FlightOperations {
 
-	private UUID id;
+	@Default
+	private UUID id = UUID.randomUUID();
 	
 	@Default
 	@JsonSerialize(using = ZonedDateTimeSerializer.class)

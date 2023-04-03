@@ -14,8 +14,8 @@
 			<artifactId>model</artifactId>
 		</dependency>
 		<dependency>
-				<groupId>com.imwiz.flightdata</groupId>
-				<artifactId>common-si</artifactId>
+			<groupId>com.imwiz.flightdata</groupId>
+			<artifactId>common-si</artifactId>
 		</dependency>
 		<dependency>
 			<!-- Import dependency management from Spring Boot -->
@@ -31,7 +31,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-			<version>3.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

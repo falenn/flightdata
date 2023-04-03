@@ -1,4 +1,4 @@
-package com.imwiz.flightdata.etl.config;
+package com.imwiz.flightdata.etl.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration.PrometheusScrapeEndpointConfiguration;

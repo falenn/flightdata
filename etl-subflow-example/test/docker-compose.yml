@@ -1,0 +1,40 @@
+version: '3'
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper:3.8'
+    networks:
+    - kafka
+    ports:
+      - '22181:2181'
+    volumes:
+      - './zookeeper_data:/bitnami'
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: yes
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+  kafka:
+    image: 'bitnami/kafka:3.4'
+    networks:
+    - kafka
+    container_name: kafka
+    ports:
+      - '29092:9092'
+    volumes:
+      - './kafka_data:/bitnami'
+      - './kafka_log:/tmp/kafka_mounts/logs'
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LOG_DIRS: /tmp/kafka_mounts/logs
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+networks:
+  kafka:
+    external: false
+  

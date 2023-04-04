@@ -25,7 +25,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
-import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -37,9 +36,11 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.imwiz.flightdata.examples.etlsubflow.config.AppConfig;
 import com.imwiz.flightdata.examples.etlsubflow.config.ChannelConfig;
+import com.imwiz.flightdata.examples.etlsubflow.config.KafkaProducerConfig;
 import com.imwiz.flightdata.examples.etlsubflow.filters.IsMultipleOfThreeFilter;
 import com.imwiz.flightdata.examples.etlsubflow.filters.IsRemainderIsOneFilter;
 import com.imwiz.flightdata.examples.etlsubflow.filters.IsRemainderTwoFilter;
+import com.imwiz.flightdata.examples.etlsubflow.flows.FlightOperationsFlow;
 import com.imwiz.flightdata.examples.etlsubflow.flows.SubFlowsConfiguration;
 import com.imwiz.flightdata.examples.etlsubflow.gateways.FlightOperationsGateway;
 import com.imwiz.flightdata.model.flight.FlightOperations;
@@ -63,6 +64,8 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest()
 @Configuration 
 @ContextConfiguration(classes = {
+		KafkaProducerConfig.class,
+		FlightOperationsFlow.class,
 		AppConfig.class,
 		SubFlowsConfiguration.class,
 		ChannelConfig.class,
@@ -99,12 +102,6 @@ class FlightOperationsTest {
 	//@Autowired
 	//CompositeMeterRegistry compositeMeterRegistry; 
 	
-	@Bean(name = "sendFlightOps.input")
-	private MessageChannel sendFlightOps() {
-		DirectChannel channel = new DirectChannel();
-		//channel.addInterceptor(new MicrometerCounterChannelInterceptor(compositeMeterRegistry));
-		return (MessageChannel)channel;
-	}
 	
 	@Bean
     private MessageChannel flightOpIn() {
@@ -130,19 +127,6 @@ class FlightOperationsTest {
                 	.retryTemplate(new RetryTemplate())
                 	.filterInRetry(true))
                 .channel("flightOpIn")
-                .get();
-    }
-    
-    @Bean
-    public IntegrationFlow sendFlightOperations(
-    		@Value("${kafka.etl-subflow-example.consumer.topic}") String topic,
-    		KafkaTemplate<String, FlightOperations> flightOpsProducingKafkaTemplate) {
-    	
-    	return IntegrationFlows
-                .from("sendFlightOps.input")
-                .enrichHeaders(headerEnricherSpec -> headerEnricherSpec
-                        .header(KafkaHeaders.TOPIC, topic))
-                .handle(Kafka.outboundChannelAdapter(flightOpsProducingKafkaTemplate))
                 .get();
     }
     
@@ -174,28 +158,7 @@ class FlightOperationsTest {
 		return properties;
 	}
 	
-	@Bean
-	public KafkaTemplate<String, FlightOperations> flightOpsProducingKafkaTemplate() {
-		return new KafkaTemplate<String, FlightOperations>(producerFactory());
-	}
-	
-	@Bean
-    public DefaultKafkaProducerFactory<String, FlightOperations> producerFactory() {
-        DefaultKafkaProducerFactory<String, FlightOperations> factory = new DefaultKafkaProducerFactory<>(producerConfigs());
-        factory.setTransactionIdPrefix("my-transaction-");
-        return factory;
-    }
-	
-	@Bean
-	public Map<String,Object> producerConfigs(){ 
-		Map<String, Object> producerProperties = new HashMap<>();
-        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return producerProperties;
-	}
-	
-	 @Test
+		 @Test
 	    public void testETLSubFlowExecution() throws Exception {
 	    	log.debug("Begin testIntegration");
 	        FlightOperations payload = generateFlightOperations();

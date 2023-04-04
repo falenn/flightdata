@@ -29,11 +29,15 @@ public interface OutboundMessageGateway {
  */
 
 
-@MessagingGateway(name = "flightOperationsGateway")
+@MessagingGateway
 public interface FlightOperationsGateway {
 	
 
-	@Gateway(requestChannel = "sendFlightOps.input")
+	/**
+	 * Gateway sends to IntegrationFlow using the name of the flow method + ".input"
+	 * @param message
+	 */
+	@Gateway(requestChannel = "sendFlightOperations.input")
 	void sendFlightOps(FlightOperations message);
 
 }
